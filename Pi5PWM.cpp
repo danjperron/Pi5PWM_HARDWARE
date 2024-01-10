@@ -1,14 +1,11 @@
 #include "Pi5PWM.hpp"
 #include <iostream>
 #include <system_error>
-//#include <stdio.h>
 #include <fcntl.h>    /* For O_RDWR */
-#include <unistd.h> 
+#include <unistd.h>
 #include <sys/ioctl.h>
-#include <stdlib.h>
 #include <stdint.h>
 #include <sys/mman.h>
-#include <assert.h>
 
 using namespace std;
 
