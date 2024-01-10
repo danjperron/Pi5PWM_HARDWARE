@@ -1,6 +1,7 @@
 #include "Pi5PWM.hpp"
 #include <iostream>
-#include <stdio.h>
+#include <system_error>
+//#include <stdio.h>
 #include <fcntl.h>    /* For O_RDWR */
 #include <unistd.h> 
 #include <sys/ioctl.h>
@@ -11,11 +12,6 @@
 
 using namespace std;
 
-/*
-#include <fcntl.h>
-#include <unistd.h>
-#include <gpiod.h>
-*/
 
 void * Pi5PWM::base=NULL;
 uint32_t * Pi5PWM::pwm0=NULL;
@@ -31,19 +27,19 @@ int Pi5PWM::setIOMap()
    int fd;
    if (-1 == (fd = open(fname, O_RDWR | O_SYNC)))
       {
-       cerr << "open error" << endl;
+       throw system_error(EIO,generic_category());
        return(0);
       }
    // 0x400000 is the size in bytes of the "resource1" sysfs file
    base =  mmap(NULL, 0x400000, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
    if (base == MAP_FAILED)
       {
-       cerr << "mmap error " << endl;
+       throw system_error(EIO,generic_category());
        return(0);
       }
    if (-1 == close(fd))
      {
-      cerr << "close error " << endl;
+       throw system_error(EIO,generic_category());
       return(0);
      }
    pwm0 = (uint32_t *)((uint8_t *) base + OFFSET_PWM0);
@@ -66,6 +62,7 @@ void  Pi5PWM::releaseIOMap()
 base = NULL;
 pwm0 = NULL;
 iobank0=NULL;
+iobank0pads=NULL;
 sys_clock=NULL;
 rio0=NULL;
 }
@@ -78,7 +75,8 @@ Pi5PWM::Pi5PWM(int pin)
   if(currentPWM>=0)
   {
     currentPin=pin;
-    // do nothing for now
+
+
     if(Pi5PWM::base==NULL)
       setIOMap();
     setPin();
