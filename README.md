@@ -5,6 +5,8 @@ Using mmap to find hardware peripheral pwm0, RIO, GPIO and system clock.
 
 The python folder contains a version in python using /sys/class/pwm with os.command()
 
+N.B. On python you need to set the dtoverlay=pwm. The C++ doesn't care since I set the register directly.
+
 
 On the main root you have the c++ class using directly the hardware.
 
